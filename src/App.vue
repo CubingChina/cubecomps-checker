@@ -1,7 +1,15 @@
 <template>
   <div class="wrapper">
+    <header>
+      <div class="row p-3 m-0">
+        <router-link to="/">Home</router-link>
+      </div>
+    </header>
     <div class="loading d-flex justify-content-center align-items-center" v-if="isLoading">Loading...</div>
     <router-view/>
+    <footer>
+
+    </footer>
   </div>
 </template>
 

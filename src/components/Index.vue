@@ -1,18 +1,19 @@
 <template>
   <div class="container d-flex flex-column justify-content-center align-items-center h-100">
     <div class="form-group">
-      <label for="comps">Please choose a comp:</label>
-      <select class="form-control" v-model="comp">
-        <optgroup v-for="(list, type) in comps" :label="type|translate">
-          <option :value="c.cid" v-for="c in list">{{ c.name }}</option>
-        </optgroup>
-      </select>
+      <label for="comps">Please choose a competition:</label>
+      <model-select
+        :options="options"
+        v-model="comp"
+        placeholder="Type the name to search">
+       </model-select>
     </div>
-    <Refresh @refresh="refresh" />
+    <Refresh @refresh="refresh" label="Refresh Competitions" />
   </div>
 </template>
 
 <script>
+import { ModelSelect } from 'vue-search-select'
 import store from 'store'
 import { client } from '../axios'
 
@@ -22,6 +23,16 @@ export default {
     return {
       comp: '',
       comps: []
+    }
+  },
+  computed: {
+    options() {
+      return this.comps.map(comp => {
+        return {
+          value: comp.cid,
+          text: comp.name
+        }
+      })
     }
   },
   watch: {
@@ -57,6 +68,9 @@ export default {
     translate(name) {
       return name.split('_').map(str => str.slice(0, 1).toUpperCase() + str.slice(1)).join(' ')
     }
+  },
+  components: {
+    ModelSelect
   }
 }
 </script>

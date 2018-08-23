@@ -34,10 +34,10 @@ function getCompList() {
     $html = getHtml();
     preg_match_all('|<table(.*?)</table>|i', $html, $matches);
     $list = $matches[1];
-    return [
-        'in_progress'=>getCompListFromDom($list[1] ?? ''),
-        'past'=>getCompListFromDom($list[3] ?? ''),
-    ];
+    return array_merge(
+        getCompListFromDom($list[1] ?? ''),
+        getCompListFromDom($list[3] ?? '')
+    );
 }
 
 function getCompListFromDom($html) {
@@ -80,9 +80,17 @@ function getComp($cid) {
                 'rnd' => $params['rnd'],
             ];
         }
-        $events[] = $event;
+        if ($event['rounds'] != []) {
+          $event['cat'] = $event['rounds'][0]['cat'];
+          $events[] = $event;
+        }
     }
-    return $events;
+    preg_match('|<title>(.*?)</title>|i', $html, $matches);
+    $name = $matches[1];
+    return [
+      'events' => $events,
+      'name' => $name,
+    ];
 }
 
 function getResults($cid, $cat, $rnd) {
@@ -98,11 +106,14 @@ function getResults($cid, $cat, $rnd) {
         parse_str($m[1], $params);
         $name = $m[2];
         $compid = $params['compid'];
+        preg_match('#<td class=col_cl.*?<b>(\d+)</b>#i', $row, $m);
+        $pos = $m[1];
         preg_match_all('#<td class=col_tm>(.*?)</td>#i', $row, $m);
         $results[] = [
             'name' => $name,
-            'compid' => $compid,
-            'results' => $m[1],
+            'compid' => intval($compid),
+            'pos' => intval($pos),
+            'scores' => $m[1],
         ];
     }
     return $results;

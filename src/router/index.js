@@ -15,12 +15,14 @@ export default new Router({
     {
       path: '/comp/:id',
       name: 'Competition',
-      component: Competition
+      component: Competition,
+      props: true
     },
     {
       path: '/comp/:id/:cat/:rnd',
       name: 'Results',
-      component: Competition
+      component: Competition,
+      props: true
     }
   ]
 })
