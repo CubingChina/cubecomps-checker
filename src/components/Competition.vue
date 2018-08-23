@@ -41,26 +41,28 @@
           </div>
         </div>
         <div class="w-100"></div>
-        <div class="col-12 score-card" v-if="result.compid">
-          <table class="table table-bordered">
-            <tbody>
-              <tr>
-                <th>No.</th>
-                <td>{{ result.compid }}</td>
-              </tr>
-              <tr>
-                <th>Name</th>
-                <td>{{ result.name }}</td>
-              </tr>
-              <tr v-for="(score, i) in result.scores">
-                <th>#{{ i + 1}}</th>
-                <td v-html="score"></td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="buttons">
-            <button class="btn btn-success" @click="checkResult(true)">Good (Y)</button>
-            <button class="btn btn-danger" @click="checkResult(false)">Bad (N)</button>
+        <div class="col-12" v-if="result.compid">
+          <div class="score-card">
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <th>No.</th>
+                  <td>{{ result.compid }}</td>
+                </tr>
+                <tr>
+                  <th>Name</th>
+                  <td>{{ result.name }}</td>
+                </tr>
+                <tr v-for="(score, i) in result.scores">
+                  <th>#{{ i + 1}}</th>
+                  <td v-html="score"></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="buttons">
+              <button class="btn btn-success" @click="checkResult(true)">Good (Y)</button>
+              <button class="btn btn-danger" @click="checkResult(false)">Bad (N)</button>
+            </div>
           </div>
         </div>
         <div class="col-12">
