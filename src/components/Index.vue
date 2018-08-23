@@ -1,5 +1,5 @@
 <template>
-  <div class="container d-flex flex-column justify-content-center align-items-center h-100">
+  <div class="container index-container d-flex flex-column justify-content-center align-items-center">
     <div class="form-group">
       <label for="comps">Please choose a competition:</label>
       <model-select
@@ -75,5 +75,8 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+.index-container {
+  height: calc(100vh - 56px);
+}
 </style>

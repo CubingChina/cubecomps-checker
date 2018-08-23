@@ -3,6 +3,7 @@
     <header>
       <div class="row p-3 m-0">
         <router-link to="/">Home</router-link>
+        <a class="ml-3" href="https://github.com/CubingChina/cubecomps-checker" target="_blank">Readme</a>
       </div>
     </header>
     <div class="loading d-flex justify-content-center align-items-center" v-if="isLoading">Loading...</div>

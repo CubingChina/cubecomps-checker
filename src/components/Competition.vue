@@ -22,7 +22,7 @@
       <div class="row">
         <div class="col-12">
           <div class="form-group position-relative">
-            <label for="q">Number, name or WCA ID</label>
+            <label for="q">Number or name</label>
             <input :type="type" id="q" class="form-control"
               v-model.trim="q"
               ref="q"
