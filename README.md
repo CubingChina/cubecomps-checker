@@ -7,7 +7,7 @@
 1. Select a competition, an event and a round. The results of that will be loaded and stored into your browser.
 2. Type name or number to search a competitor.
 3. Click on the competitor or type "Enter" to select it.
-4. Check the results with score card. Click "Good" (shortcut "Y") or "Bad" (shortcut "N").
+4. Check the results with score card. Click "Good" (shortcut "Y") or "Bad" (shortcut "N"). Double click on attempt or press shortcuts 1, 2, 3, 4, 5 to toggle the attempt as "Good"/"Bad". Once there's any "Bad" attempt, the "Good" action always acts as "Bad" for the result.
 5. If there's something changed on CubeComps, click "Refresh" button to fetch latest data.
 6. **IMPORTANT!!** All data are stored into your browser. No one has the backup of your checking results.
 

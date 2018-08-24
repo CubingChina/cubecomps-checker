@@ -53,7 +53,12 @@
                   <th>Name</th>
                   <td>{{ result.name }}</td>
                 </tr>
-                <tr v-for="(score, i) in result.scores">
+                <tr v-for="(score, i) in result.scores"
+                  :class="{ 'table-danger': result.badAttempts !== undefined && i in result.badAttempts }"
+                  @dblclick="markBadAttempt(i)"
+                  @touchstart="touchstart(event, i)"
+                  @touchend="touchend(event, i)"
+                >
                   <th>#{{ i + 1}}</th>
                   <td v-html="score"></td>
                 </tr>
@@ -68,7 +73,10 @@
         <div class="col-12">
           <h4>Results</h4>
           <Refresh @refresh="refreshResults" label="Refresh Results" />
-          <div class="status" v-if="results.length">Total: {{ results.length }}, Good: {{ goodResults.length }}, Bad: {{ badResults.length }}</div>
+          <div class="status" v-if="results.length"><b>Total</b>: {{ results.length }}, <b>Good</b>: {{ goodResults.length }}, <b>Bad</b>: {{ badResults.length }}</div>
+          <div class="show-all">
+            Show All Results: <toggle-button v-model="showAll" :labels="{ checked: 'Yes', unchecked: 'No' }"/>
+          </div>
           <div class="table-responsive" v-if="results.length">
             <table class="table table-bordered table-striped">
               <thead>
@@ -81,12 +89,12 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="result in results">
+                <tr v-for="result in filteredResults">
                   <td v-html="getCheckedStatus(result)"></td>
                   <td>{{ result.compid }}</td>
                   <td>{{ result.pos }}</td>
                   <td>{{ result.name }}</td>
-                  <td v-for="score in result.scores" v-html="score">
+                  <td v-for="(score, i) in result.scores" v-html="score" :class="{ 'table-danger': result.badAttempts !== undefined && i in result.badAttempts }">
                   </td>
                 </tr>
               </tbody>
@@ -99,8 +107,11 @@
 </template>
 
 <script>
-import store from 'store'
+import store from '../store'
 import { client } from '../axios'
+
+let showAll = store.get('showAll')
+let touches = {}
 
 export default {
   data() {
@@ -115,7 +126,8 @@ export default {
       q: '',
       focused: false,
       index: 0,
-      sortBy: 'pos'
+      sortBy: 'pos',
+      showAll: showAll
     }
   },
   props: ['id', 'cat', 'rnd'],
@@ -138,6 +150,9 @@ export default {
     },
     badResults() {
       return this.results.filter(r => r.checked === false)
+    },
+    filteredResults() {
+      return this.showAll ? this.results : this.results.filter(r => r.checked !== true)
     },
     resultsKey() {
       return ['results', this.id, this.cat, this.rnd].join('_')
@@ -170,8 +185,11 @@ export default {
       })
       this.sortBy = 'pos'
     },
-    results() {
+    result() {
       this.storeResults()
+    },
+    showAll(showAll) {
+      store.set('showAll', showAll)
     }
   },
   mounted() {
@@ -198,6 +216,7 @@ export default {
       this.$refs.q.blur()
       this.q = ''
       this.index = 0
+      touches = {}
     },
     focus() {
       this.focused = true
@@ -216,6 +235,24 @@ export default {
         this.index++
       }
     },
+    touchstart(e, i) {
+      touches[i] = touches[i] || {}
+      touches[i].start = Date.now()
+    },
+    touchend(e, i) {
+      touches[i] = touches[i] || {}
+      touches[i].end = Date.now()
+      touches[i].tap = touches[i].tap || 0
+      if (touches[i].end - touches[i].start < 300) {
+        touches[i].tap++
+      } else {
+        touches[i].tap = 0
+      }
+      if (touches[i].tap == 2) {
+        this.markBadAttempt(i)
+        touches[i].tap = 0
+      }
+    },
     keyup(e) {
       const which = e.which
       if (this.result.compid && !this.focused) {
@@ -227,6 +264,20 @@ export default {
           case 78: // N
           case 109: // - on num keys
             this.checkResult(false)
+            break
+          case 49: // 1
+          case 50: // 2
+          case 51: // 3
+          case 52: // 4
+          case 53: // 5
+            this.markBadAttempt(which - 49)
+            break
+          case 49 + 48: // 1 on num keys
+          case 50 + 48: // 2 on num keys
+          case 51 + 48: // 3 on num keys
+          case 52 + 48: // 4 on num keys
+          case 53 + 48: // 5 on num keys
+            this.markBadAttempt(which - 97)
             break
         }
       }
@@ -246,12 +297,25 @@ export default {
       this.fetchResults()
     },
     checkResult(checked) {
+      if (this.result.badAttempts !== undefined && Object.keys(this.result.badAttempts).length > 0) {
+        checked = false
+      }
       if (!('checked' in this.result)) {
         this.$set(this.result, 'checked', checked)
       }
       this.result.checked = checked
       this.$refs.q.focus()
       this.result = {}
+    },
+    markBadAttempt(attempt) {
+      if (!this.result.badAttempts) {
+        this.$set(this.result, 'badAttempts', {})
+      }
+      if (this.result.badAttempts[attempt]) {
+        this.$delete(this.result.badAttempts, attempt)
+      } else {
+        this.$set(this.result.badAttempts, attempt, true)
+      }
     },
     getCheckedStatus(result) {
       if (result.checked === true) {

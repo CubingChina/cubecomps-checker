@@ -2,42 +2,35 @@
   <div class="container index-container d-flex flex-column justify-content-center align-items-center">
     <div class="form-group">
       <label for="comps">Please choose a competition:</label>
-      <model-select
-        :options="options"
+      <v-select
+        :options="comps"
         v-model="comp"
-        placeholder="Type the name to search">
-       </model-select>
+        label="name"
+      >
+      </v-select>
     </div>
     <Refresh @refresh="refresh" label="Refresh Competitions" />
   </div>
 </template>
 
 <script>
-import { ModelSelect } from 'vue-search-select'
-import store from 'store'
+import VSelect from 'vue-select'
+import store from '../store'
 import { client } from '../axios'
 
 export default {
   name: 'Index',
   data () {
     return {
-      comp: '',
+      comp: null,
       comps: []
     }
   },
   computed: {
-    options() {
-      return this.comps.map(comp => {
-        return {
-          value: comp.cid,
-          text: comp.name
-        }
-      })
-    }
   },
   watch: {
-    comp(cid) {
-      this.$router.push('/comp/' + cid)
+    comp(comp) {
+      this.$router.push('/comp/' + comp.cid)
     }
   },
   methods: {
@@ -70,13 +63,16 @@ export default {
     }
   },
   components: {
-    ModelSelect
+    'v-select': VSelect
   }
 }
 </script>
 
-<style>
+<style lang="less">
 .index-container {
   height: calc(100vh - 56px);
+  .form-group {
+    width: 100%;
+  }
 }
 </style>
