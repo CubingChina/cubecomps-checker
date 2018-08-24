@@ -23,7 +23,7 @@
         <div class="col-12">
           <div class="form-group position-relative">
             <label for="q">Number or name</label>
-            <input :type="type" id="q" class="form-control"
+            <input :type="numberOnly ? 'tel' : 'text'" id="q" class="form-control"
               v-model.trim="q"
               ref="q"
               @keyup.enter="select"
@@ -33,6 +33,7 @@
               @blur="blur"
               autocomplete="off"
             />
+            Change input to number only: <toggle-button v-model="numberOnly" :labels="{ checked: 'Yes', unchecked: 'No' }"/>
           </div>
           <div class="form-group position-relative" v-if="competitors.length && q.length">
             <ul class="competitor-list list-group position-absolute">
@@ -109,6 +110,7 @@ import store from '../store'
 import { client } from '../axios'
 
 let showAll = store.get('showAll')
+let numberOnly = store.get('numberOnly')
 let touches = {}
 
 export default {
@@ -120,11 +122,11 @@ export default {
       round: {},
       results: [],
       result: {},
-      type: 'text',
       q: '',
       focused: false,
       index: 0,
       sortBy: 'pos',
+      numberOnly: numberOnly,
       showAll: showAll
     }
   },
@@ -185,6 +187,9 @@ export default {
     },
     result() {
       this.storeResults()
+    },
+    numberOnly(numberOnly) {
+      store.set('numberOnly', numberOnly)
     },
     showAll(showAll) {
       store.set('showAll', showAll)
