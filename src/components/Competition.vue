@@ -56,8 +56,6 @@
                 <tr v-for="(score, i) in result.scores"
                   :class="{ 'table-danger': result.badAttempts !== undefined && i in result.badAttempts }"
                   @dblclick="markBadAttempt(i)"
-                  @touchstart="touchstart(event, i)"
-                  @touchend="touchend(event, i)"
                 >
                   <th>#{{ i + 1}}</th>
                   <td v-html="score"></td>
@@ -233,24 +231,6 @@ export default {
     down() {
       if (this.index < this.competitors.length - 1) {
         this.index++
-      }
-    },
-    touchstart(e, i) {
-      touches[i] = touches[i] || {}
-      touches[i].start = Date.now()
-    },
-    touchend(e, i) {
-      touches[i] = touches[i] || {}
-      touches[i].end = Date.now()
-      touches[i].tap = touches[i].tap || 0
-      if (touches[i].end - touches[i].start < 300) {
-        touches[i].tap++
-      } else {
-        touches[i].tap = 0
-      }
-      if (touches[i].tap == 2) {
-        this.markBadAttempt(i)
-        touches[i].tap = 0
       }
     },
     keyup(e) {
